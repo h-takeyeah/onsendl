@@ -20,10 +20,8 @@ python -m onsendl https://www.onsen.ag/program/<title>
 ## :runner: Usage
 
 1. Go to [onsen.ag](onsen.ag)
-2. Search favorite program and click *to program site*
-  ![usage1](./asset/usage1.png)
-3. Copy URL of the opened tab
-  ![usage2](./asset/usage2.png)
+2. Search favorite program and click *to program site*<div><img src="./asset/usage1.png" width="480"></div>
+3. Copy URL of the opened tab<div><img src="./asset/usage2.png"/></div>
 4. Pass URL to onsendl
 5. All episodes will be downloaded to current directory
 
