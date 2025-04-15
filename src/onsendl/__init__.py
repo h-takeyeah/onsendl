@@ -13,7 +13,6 @@ import m3u8
 
 from onsendl.html_parser import OnsenHTMLParser
 
-PSYSTEM = platform.system().lower()
 PWD = Path(".").resolve()
 # fmt: off
 INVALID_CHARS_DICT = str.maketrans(
