@@ -18,7 +18,7 @@ uv run onsendl https://www.onsen.ag/program/<title>
 
 ## :runner: Usage
 
-1. Go to [onsen.ag](onsen.ag)
+1. Go to [onsen.ag](https://www.onsen.ag)
 2. Search favorite program and click *to program site*<div><img src="./asset/usage1.png" width="480"></div>
 3. Copy URL of the opened tab<div><img src="./asset/usage2.png"/></div>
 4. Pass URL to onsendl
