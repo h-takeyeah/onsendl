@@ -1,6 +1,5 @@
 import argparse
 import gzip
-import m3u8
 import os
 import platform
 import re
@@ -10,19 +9,22 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+import m3u8
+
 from onsendl.html_parser import OnsenHTMLParser
 
 PSYSTEM = platform.system().lower()
 PWD = Path(".").resolve()
+# fmt: off
 INVALID_CHARS_DICT = str.maketrans(
     {
-        # fmt: off
         k: "_" for k in [
             " ", "\u3000", "\\", "/", ":", ";", "*",
             "?", '"', "<", ">", "|", "%", "\u2019", "!",
         ]
     }
 )
+# fmt: on
 
 
 def custom_load(uri):
@@ -35,9 +37,13 @@ def custom_load(uri):
 def save_js_str(uri):
     with urllib.request.urlopen(uri) as res:
         if res.info().get("Content-Encoding") == "gzip":
-            res_content = gzip.decompress(res.read()).decode(res.headers.get_content_charset(failobj="utf-8"))
+            res_content = gzip.decompress(res.read()).decode(
+                res.headers.get_content_charset(failobj="utf-8")
+            )
         else:
-            res_content = res.read().decode(res.headers.get_content_charset(failobj="utf-8"))
+            res_content = res.read().decode(
+                res.headers.get_content_charset(failobj="utf-8")
+            )
     p = OnsenHTMLParser()
     p.feed(res_content)
     return p.saved_filepath
@@ -45,14 +51,15 @@ def save_js_str(uri):
 
 def download_chunks(uri, title):
     filepath = PWD.joinpath(title + ".aac")
+    # fmt: off
     completed = subprocess.run(
-        # fmt: off
         args=[
             "ffmpeg", "-n", "-stats", "-loglevel", "warning",
             "-headers", "Referer: https://www.onsen.ag/\r\n",
             "-i", uri, "-c", "copy", filepath,
         ]
     )
+    # fmt: on
     try:
         completed.check_returncode()
     except subprocess.CalledProcessError:
