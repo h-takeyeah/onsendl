@@ -6,10 +6,9 @@ import platform
 import re
 import subprocess
 import sys
-import urllib.request
 import urllib.parse
+import urllib.request
 from pathlib import Path
-import m3u8.httpclient as m3u8http
 
 from onsendl.html_parser import OnsenHTMLParser
 
@@ -26,42 +25,19 @@ INVALID_CHARS_DICT = str.maketrans(
 )
 
 
-class OnsenHTTPClient(m3u8http.DefaultHTTPClient):
-    def download(
-        self,
-        uri,
-        timeout=None,
-        headers={},
-        verify_ssl=True,
-    ):
-        proxy_handler = urllib.request.ProxyHandler(self.proxies)
-        https_handler = m3u8http.HTTPSHandler(verify_ssl=verify_ssl)
-        opener = urllib.request.build_opener(proxy_handler, https_handler)
-        opener.addheaders = headers.items()
-        resource = opener.open(uri, timeout=timeout)
-        base_uri = m3u8http._parsed_url(resource.geturl())
-        bytes_content = resource.read()
-        # assert isinstance(bytes_content, bytes)
-        try:
-            bytes_content = gzip.decompress(bytes_content)
-        except gzip.BadGzipFile:
-            pass
-        content = bytes_content.decode(
-            resource.headers.get_content_charset(failobj="utf-8")
-        )
-        return content, base_uri
-
-
 def custom_load(uri):
     return m3u8.load(
         uri=uri,
         headers={"Referer": "https://www.onsen.ag/"},
-        http_client=OnsenHTTPClient(),
     )
 
 
 def save_js_str(uri):
-    res_content, _ = OnsenHTTPClient().download(uri)
+    with urllib.request.urlopen(uri) as res:
+        if res.info().get("Content-Encoding") == "gzip":
+            res_content = gzip.decompress(res.read()).decode(res.headers.get_content_charset(failobj="utf-8"))
+        else:
+            res_content = res.read().decode(res.headers.get_content_charset(failobj="utf-8"))
     p = OnsenHTMLParser()
     return p.feed(res_content)
 
@@ -124,14 +100,15 @@ def main():
         variant_m3u8 = custom_load(pl_uri)
         # assert variant_m3u8.is_variant
         best_chunk = max(
-            variant_m3u8.playlists, key=lambda pl: pl.stream_info.bandwidth
+            variant_m3u8.playlists, key=lambda pl: pl.stream_info.bandwidth or 0
         )
 
         # choice best quality chunklist
         chunklist_uri = (
             best_chunk.absolute_uri if best_chunk.absolute_uri is not None else ""
         )
-        if m3u8.is_url(chunklist_uri):
+        # assume given uri is uri
+        if urllib.parse.urlsplit(chunklist_uri).scheme:
             ep_unique_id = (
                 urllib.parse.urlparse(chunklist_uri).path.strip("/").split("/")[-2]
             )
