@@ -39,7 +39,8 @@ def save_js_str(uri):
         else:
             res_content = res.read().decode(res.headers.get_content_charset(failobj="utf-8"))
     p = OnsenHTMLParser()
-    return p.feed(res_content)
+    p.feed(res_content)
+    return p.saved_filepath
 
 
 def download_chunks(uri, title):
