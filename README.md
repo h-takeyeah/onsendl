@@ -4,18 +4,17 @@ audio download tool for [onsen](https://www.onsen.ag) listener
 
 ## :wrench: Try
 
+Before you do, you must setup uv.
+The instruction can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
+
 ```plain
 git clone https://github.com/h-takeyeah/onsendl.git
 cd onsendl
-# install dependencies
-pipenv install
-pipenv shell
 # run
-python -m onsendl https://www.onsen.ag/program/<title>
+uv run onsendl https://www.onsen.ag/program/<title>
 ```
 
 - **ffmpeg** is required
-- pipx integration and global install is not tested.
 
 ## :runner: Usage
 
